@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xylem · Visual Behavior Tree Editor</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <header id="toolbar">
+    <div class="toolbar-group brand">
+      <svg class="brand-icon" viewBox="0 0 120 120" role="img" aria-label="Xylem">
+        <g fill="none" stroke="#7c9186" stroke-width="4.4" stroke-linecap="round">
+          <path d="M60,31 C60,42 58,48 55,54"/>
+          <path d="M55,54 C48,64 38,72 30,85"/>
+          <path d="M55,54 C56,68 58,84 60,97"/>
+          <path d="M55,54 C66,60 78,66 86,77"/>
+        </g>
+        <circle cx="60" cy="24" r="9" fill="#4f8cff"/>
+        <circle cx="30" cy="85" r="7.5" fill="#34c77b"/>
+        <circle cx="60" cy="97" r="7.5" fill="#e8b93f"/>
+        <circle cx="86" cy="77" r="7" fill="#c084fc"/>
+      </svg>
+      <span class="brand-name">Xylem</span>
+    </div>
+
+    <div class="toolbar-group">
+      <button id="btn-new" class="btn" title="New Project (clears the current tree)">New</button>
+      <button id="btn-open" class="btn" title="Open Project (JSON)">Open</button>
+      <button id="btn-save" class="btn" title="Save to the browser (Ctrl+S)">Save</button>
+      <button id="btn-save-as" class="btn" title="Export project as a JSON file">Save As</button>
+      <input id="file-input" type="file" accept="application/json" hidden>
+      <button id="btn-import-xml" class="btn" title="Import a tree from a behavior tree XML file">Import XML</button>
+      <input id="xml-file-input" type="file" accept=".xml,text/xml,application/xml" hidden>
+      <div class="dropdown">
+        <button id="btn-export-menu" class="btn" title="Export in other formats">Export ▾</button>
+        <div id="export-menu" class="dropdown-menu" hidden>
+          <button type="button" data-format="xml">XML</button>
+          <button type="button" data-format="yaml">YAML</button>
+          <button type="button" data-format="svg">SVG</button>
+          <button type="button" data-format="png">PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar-group">
+      <button id="btn-undo" class="btn icon-btn" title="Undo (Ctrl+Z)" disabled>↶</button>
+      <button id="btn-redo" class="btn icon-btn" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
+    </div>
+
+    <div class="toolbar-group">
+      <div class="dropdown">
+        <button id="btn-validation" class="btn icon-btn" title="View validation issues">
+          ⚠ <span id="validation-badge" class="validation-badge" hidden>0</span>
+        </button>
+        <div id="validation-menu" class="dropdown-menu validation-menu" hidden></div>
+      </div>
+    </div>
+
+    <div class="toolbar-group">
+      <input id="node-search-input" type="text" class="node-search-input" placeholder="🔍 Search node (Enter)" title="Search for a node in the current tree (Ctrl+F)">
+    </div>
+
+    <div class="toolbar-group grow"></div>
+
+    <div class="toolbar-group">
+      <button id="btn-auto-layout" class="btn" title="Automatically rearrange the tree into layers">Auto Layout</button>
+      <button id="btn-snap" class="btn icon-btn" title="Toggle snap to grid">▦</button>
+      <button id="btn-add-comment" class="btn icon-btn" title="Add a visual comment to the canvas">🗒</button>
+    </div>
+
+    <div class="toolbar-group">
+      <button id="btn-zoom-out" class="btn icon-btn" title="Zoom out">−</button>
+      <span id="zoom-level" class="zoom-level">100%</span>
+      <button id="btn-zoom-in" class="btn icon-btn" title="Zoom in">+</button>
+      <button id="btn-zoom-reset" class="btn icon-btn" title="Center / reset zoom">⤢</button>
+    </div>
+
+    <div class="toolbar-group">
+      <span id="autosave-indicator" class="autosave-indicator">Saved</span>
+    </div>
+  </header>
+
+  <div id="sim-toolbar">
+    <div class="toolbar-group">
+      <button id="sim-play" class="btn icon-btn" title="Play (Space)">▶</button>
+      <button id="sim-pause" class="btn icon-btn" title="Pause (Space)" disabled>⏸</button>
+      <button id="sim-step" class="btn icon-btn" title="Step (runs a single tick)">⏭</button>
+      <button id="sim-stop" class="btn icon-btn" title="Stop">⏹</button>
+      <button id="sim-reset" class="btn icon-btn" title="Reset (clears states)">↺</button>
+    </div>
+    <div class="toolbar-group">
+      <label class="sim-speed-label" for="sim-speed">Speed</label>
+      <select id="sim-speed">
+        <option value="0.25">0.25x</option>
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="2">2x</option>
+        <option value="5">5x</option>
+      </select>
+    </div>
+    <div class="toolbar-group">
+      <button id="btn-debug-mode" class="btn icon-btn" title="Debug Mode: pauses execution when a breakpoint is hit">🐞</button>
+    </div>
+    <div class="toolbar-group grow"></div>
+    <div class="toolbar-group">
+      <span id="sim-stats" class="sim-stats" title="Successes / Failures / Average time / Max time / FPS"></span>
+    </div>
+    <div class="toolbar-group">
+      <span id="sim-status" class="sim-status sim-status-idle">Idle</span>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <aside id="palette">
+      <div class="palette-search">
+        <input id="palette-search-input" type="text" placeholder="Search node...">
+      </div>
+      <div id="palette-list" class="palette-list"></div>
+    </aside>
+
+    <main id="canvas-area">
+      <div id="viewport">
+        <div id="world">
+          <svg id="connections-layer"></svg>
+          <div id="comments-layer"></div>
+          <div id="nodes-layer"></div>
+        </div>
+      </div>
+      <div id="toast-container"></div>
+      <div id="canvas-hint">Drag a node from the palette on the left to get started.</div>
+      <div id="minimap-wrap" title="Click or drag to navigate">
+        <canvas id="minimap" width="180" height="120"></canvas>
+      </div>
+    </main>
+
+    <aside id="properties-panel">
+      <div class="panel-header">Properties</div>
+      <div id="properties-content" class="panel-empty">Select a node to edit its properties.</div>
+    </aside>
+
+  </div>
+
+  <div id="log-panel">
+    <div class="log-panel-header">
+      <button id="log-toggle" class="log-toggle-btn" title="Collapse/expand logs">▾</button>
+      <span class="log-title">Execution Logs</span>
+      <select id="log-filter">
+        <option value="all">All states</option>
+        <option value="running">Running</option>
+        <option value="success">Success</option>
+        <option value="failure">Failure</option>
+        <option value="skipped">Skipped</option>
+      </select>
+      <input id="log-search" type="text" placeholder="Search by node...">
+      <div class="toolbar-group grow"></div>
+      <button id="log-clear" class="btn" title="Clear logs">Clear</button>
+      <button id="log-export-txt" class="btn" title="Export as TXT">Export TXT</button>
+      <button id="log-export-csv" class="btn" title="Export as CSV">Export CSV</button>
+    </div>
+    <div id="log-body" class="log-body"></div>
+  </div>
+
+</div>
+
+<script src="js/nodeTypes.js"></script>
+<script src="js/Node.js"></script>
+<script src="js/Connection.js"></script>
+<script src="js/BehaviorTree.js"></script>
+<script src="js/Storage.js"></script>
+<script src="js/Renderer.js"></script>
+<script src="js/Palette.js"></script>
+<script src="js/PropertiesPanel.js"></script>
+<script src="js/Logger.js"></script>
+<script src="js/Simulator.js"></script>
+<script src="js/Layout.js"></script>
+<script src="js/XmlExporter.js"></script>
+<script src="js/XmlImporter.js"></script>
+<script src="js/YamlSerializer.js"></script>
+<script src="js/SvgExporter.js"></script>
+<script src="js/HistoryManager.js"></script>
+<script src="js/Minimap.js"></script>
+<script src="js/CanvasComments.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

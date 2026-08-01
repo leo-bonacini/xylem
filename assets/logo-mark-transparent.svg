@@ -1,0 +1,13 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Xylem logo mark">
+  <g fill="none" stroke="#7c9186" stroke-width="3.2" stroke-linecap="round">
+    <path d="M60,31 C60,42 58,48 55,54"/>
+    <path d="M55,54 C48,64 38,72 30,85"/>
+    <path d="M55,54 C56,68 58,84 60,97"/>
+    <path d="M55,54 C66,60 78,66 86,77"/>
+  </g>
+
+  <circle cx="60" cy="24" r="7.5" fill="#4f8cff"/>
+  <circle cx="30" cy="85" r="6" fill="#34c77b"/>
+  <circle cx="60" cy="97" r="6" fill="#e8b93f"/>
+  <circle cx="86" cy="77" r="5.5" fill="#c084fc"/>
+</svg>
