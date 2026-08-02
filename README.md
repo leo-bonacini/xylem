@@ -33,8 +33,8 @@ Most behavior tree editors need an install, a build step, or a running backend. 
 No install, no build, no dependencies.
 
 ```bash
-git clone <this-repo>
-cd bt
+git clone https://github.com/leo-bonacini/xylem.git
+cd xylem
 # then just open index.html in a browser
 ```
 
