@@ -82,6 +82,10 @@
     <div class="toolbar-group">
       <span id="autosave-indicator" class="autosave-indicator">Saved</span>
     </div>
+
+    <div class="toolbar-group">
+      <span id="visitor-counter" class="visitor-counter" title="Total visits">— visits</span>
+    </div>
   </header>
 
   <div id="sim-toolbar">
@@ -186,5 +190,14 @@
 <script src="js/Minimap.js"></script>
 <script src="js/CanvasComments.js"></script>
 <script src="js/main.js"></script>
+<script>
+(function () {
+  var el = document.getElementById('visitor-counter');
+  fetch('https://abacus.jasoncameron.dev/hit/xylem-leobonacini/visits')
+    .then(function (res) { return res.json(); })
+    .then(function (data) { el.textContent = data.value + ' visits'; })
+    .catch(function () { el.textContent = 'n/a visits'; });
+})();
+</script>
 </body>
 </html>

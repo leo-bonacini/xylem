@@ -95,6 +95,11 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
 .autosave-indicator.dirty { color: var(--warning); }
 .autosave-indicator.saved { color: var(--success); }
 
+.visitor-counter {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
 .node-search-input {
   width: 220px;
   padding: 6px 10px;
