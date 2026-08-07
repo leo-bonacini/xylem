@@ -127,7 +127,7 @@ There is no build step and no test runner checked into the repo. The shipped app
 
 ## Contributing
 
-Found a bug? Open an issue using the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md). Pull requests are welcome and follow the [PR template](.github/pull_request_template.md); since there's no build step or test suite, testing is manual (open `index.html` in a browser and exercise the change).
+Found a bug? Open an issue using the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md). Have an idea? Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). Pull requests are welcome and follow the [PR template](.github/pull_request_template.md); since there's no build step or test suite, testing is manual (open `index.html` in a browser and exercise the change).
 
 ## License
 
