@@ -3,7 +3,7 @@ const AUTOSAVE_KEY = 'bt-editor-autosave-v1';
 class Storage {
   // On pages opened via file:// some browsers treat the origin as opaque,
   // and localStorage can throw SecurityError just from being referenced.
-  // Each method degrades gracefully (no autosave) instead of crashing the app.
+  // If it does, each method just skips autosave instead of crashing the app.
   static isAvailable() {
     try {
       return typeof localStorage !== 'undefined' && localStorage !== null;
