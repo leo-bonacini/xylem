@@ -226,7 +226,7 @@ const propertiesPanel = new PropertiesPanel({
 
 /** Shared core for New/Open/Import XML/Undo/Redo: swaps the entire tree and
  * realigns every module holding a reference to it. Does not touch history
- * or logs — the caller decides whether they should be cleared
+ * or logs - the caller decides whether they should be cleared
  * (swapTree() clears them; undo/redo does not). */
 function swapTreeInternal(newTree) {
   tree = newTree;

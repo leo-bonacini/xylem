@@ -1,5 +1,5 @@
 // Hand-written YAML serializer (no external library). Covers only what our
-// own data needs: objects, arrays, strings, numbers, booleans, and null —
+// own data needs: objects, arrays, strings, numbers, booleans, and null -
 // enough to export the tree in a readable form, without aiming to be a
 // generic, complete YAML serializer.
 

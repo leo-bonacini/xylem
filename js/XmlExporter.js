@@ -1,7 +1,7 @@
 // Exports the tree in a standard behavior tree XML format. Besides the
 // "official" attributes (ID, num_attempts, msec, etc.), it writes attributes
 // prefixed with `_` (position, description, comments) so that re-importing
-// the same file in this editor restores the layout — extra attributes are
+// the same file in this editor restores the layout - extra attributes are
 // ignored by any standard parser, so the file remains valid for them.
 
 const XML_EXPORT_TAG = {

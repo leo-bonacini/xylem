@@ -1,6 +1,6 @@
 // Freestanding visual comments on the canvas ("post-its"), independent of
 // nodes. They live inside #comments-layer, a sibling of #nodes-layer inside
-// #world — it inherits the same pan/zoom automatically, so a comment's
+// #world - it inherits the same pan/zoom automatically, so a comment's
 // x/y coordinates are world coordinates, exactly like a node's.
 
 class CanvasComments {

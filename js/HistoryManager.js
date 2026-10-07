@@ -1,7 +1,7 @@
 // Snapshot-based Undo/Redo (not per-command). Each entry is the
 // `tree.toJSON()` from BEFORE a mutation. This is simpler and more robust
 // than reimplementing the inverse operation for every action type (move,
-// connect, delete, edit a parameter...), at the cost of more memory —
+// connect, delete, edit a parameter...), at the cost of more memory -
 // acceptable for the tree sizes this editor handles (tens/hundreds of nodes).
 
 class HistoryManager {

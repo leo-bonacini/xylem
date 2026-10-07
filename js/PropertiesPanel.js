@@ -6,7 +6,7 @@ class PropertiesPanel {
    * @param {(node:import('./Node.js').Node)=>void} opts.onChange called after any field edit
    * @param {(nodeId:string)=>void} opts.onDelete
    * @param {()=>void} [opts.onBeforeEdit] called once per focus session,
-   *   before the first change in a field — used to push an undo/redo entry.
+   *   before the first change in a field - used to push an undo/redo entry.
    */
   constructor({ contentEl, onChange, onDelete, onBeforeEdit }) {
     this.contentEl = contentEl;

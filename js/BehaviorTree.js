@@ -58,7 +58,7 @@ class BehaviorTree {
     return [...this.nodes.values()].filter((n) => n.type === 'root');
   }
 
-  /** Removes a node AND its whole subtree (used by Cut — unlike removeNode,
+  /** Removes a node AND its whole subtree (used by Cut - unlike removeNode,
    * which preserves children as orphans). */
   removeSubtree(id) {
     const node = this.nodes.get(id);
@@ -72,7 +72,7 @@ class BehaviorTree {
   }
 
   /** Serializes a node and all of its descendants (in this order: the node
-   * itself first, then the subtree) — used by Copy/Cut. */
+   * itself first, then the subtree) - used by Copy/Cut. */
   getSubtreeJSON(id) {
     const node = this.nodes.get(id);
     if (!node) return [];
@@ -82,7 +82,7 @@ class BehaviorTree {
   /** Recreates the nodes from `nodesJson` (generating new IDs, remapping
    * parent/children internally) offset by dx/dy. The first element of
    * `nodesJson` is always the root of the copied subtree (see
-   * getSubtreeJSON) and becomes a detached subtree with no parent — the
+   * getSubtreeJSON) and becomes a detached subtree with no parent - the
    * caller decides where to reconnect it. Returns the ID of the new pasted
    * root node. */
   pasteSubtreeJSON(nodesJson, dx = 40, dy = 40) {
