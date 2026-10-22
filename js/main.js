@@ -50,6 +50,9 @@ const logSearchEl = document.getElementById('log-search');
 const logClearBtn = document.getElementById('log-clear');
 const logExportTxtBtn = document.getElementById('log-export-txt');
 const logExportCsvBtn = document.getElementById('log-export-csv');
+const logControlsEl = document.getElementById('log-controls');
+const metricsBodyEl = document.getElementById('metrics-body');
+const panelTabEls = document.querySelectorAll('.panel-tab');
 
 // toasting
 
@@ -137,6 +140,7 @@ function markDirty() {
   scheduleAutosave();
   runValidation();
   minimap.render();
+  metricsPanel.render();
 }
 
 // renderer
@@ -184,7 +188,10 @@ const simulator = new Simulator({
   onNodeState: (nodeId, state) => renderer.applyNodeState(nodeId, state),
   onLog: (entry) => logger.add(entry),
   onSimStateChange: (state) => updateSimStatusUI(state),
-  onStatsChange: () => updateSimStats(),
+  onStatsChange: () => {
+    updateSimStats();
+    metricsPanel.render();
+  },
   onBreakpointHit: (node) => showToast(`Breakpoint hit at "${node.title}".`, 'warning'),
 });
 updateSimStatusUI('idle');
@@ -203,6 +210,35 @@ btnDebugModeEl.addEventListener('click', () => {
 });
 
 logToggleBtn.addEventListener('click', () => logPanelEl.classList.toggle('collapsed'));
+
+// metrics tab
+
+const metricsPanel = new MetricsPanel({
+  bodyEl: metricsBodyEl,
+  nodesLayerEl,
+  getTree: () => tree,
+  getExecution: () => simulator.getExecutionMetrics(),
+  onFocusNode: (nodeId) => {
+    renderer.selectNode(nodeId);
+    const bounds = renderer.getNodeBounds(nodeId);
+    if (bounds) renderer.panTo(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  },
+});
+
+function showPanelTab(name) {
+  for (const tab of panelTabEls) {
+    const active = tab.dataset.tab === name;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', String(active));
+  }
+  logPanelEl.classList.remove('collapsed');
+  logBodyEl.hidden = name !== 'logs';
+  logControlsEl.hidden = name !== 'logs';
+  metricsBodyEl.hidden = name !== 'metrics';
+  metricsPanel.setVisible(name === 'metrics');
+}
+
+for (const tab of panelTabEls) tab.addEventListener('click', () => showPanelTab(tab.dataset.tab));
 logClearBtn.addEventListener('click', () => logger.clear());
 logExportTxtBtn.addEventListener('click', () => logger.exportTXT());
 logExportCsvBtn.addEventListener('click', () => logger.exportCSV());
