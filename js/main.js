@@ -23,8 +23,8 @@ const propertiesContentEl = document.getElementById('properties-content');
 
 const fileInputEl = document.getElementById('file-input');
 const xmlFileInputEl = document.getElementById('xml-file-input');
-const exportMenuBtn = document.getElementById('btn-export-menu');
-const exportMenuEl = document.getElementById('export-menu');
+const fileMenuBtn = document.getElementById('btn-file-menu');
+const fileMenuEl = document.getElementById('file-menu');
 
 const btnUndoEl = document.getElementById('btn-undo');
 const btnRedoEl = document.getElementById('btn-redo');
@@ -55,6 +55,15 @@ const metricsBodyEl = document.getElementById('metrics-body');
 const panelTabEls = document.querySelectorAll('.panel-tab');
 
 // toasting
+
+function createIcon(name) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'icon');
+  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  use.setAttribute('href', `#i-${name}`);
+  svg.appendChild(use);
+  return svg;
+}
 
 function showToast(message, type = 'info') {
   const el = document.createElement('div');
@@ -117,7 +126,7 @@ function renderValidationMenu(issues) {
     const row = document.createElement('button');
     row.type = 'button';
     row.className = `validation-row validation-${issue.level}`;
-    row.textContent = `${issue.level === 'error' ? '⛔' : '⚠️'} ${issue.message}`;
+    row.append(createIcon(issue.level === 'error' ? 'circle-x' : 'triangle-alert'), document.createTextNode(issue.message));
     if (issue.nodeId) {
       row.addEventListener('click', () => {
         renderer.selectNode(issue.nodeId);
@@ -206,10 +215,17 @@ simSpeedEl.addEventListener('change', () => simulator.setSpeed(Number(simSpeedEl
 btnDebugModeEl.addEventListener('click', () => {
   simulator.debugMode = !simulator.debugMode;
   btnDebugModeEl.classList.toggle('active', simulator.debugMode);
+  btnDebugModeEl.setAttribute('aria-pressed', String(simulator.debugMode));
   showToast(`Debug Mode ${simulator.debugMode ? 'enabled' : 'disabled'}.`, 'info');
 });
 
-logToggleBtn.addEventListener('click', () => logPanelEl.classList.toggle('collapsed'));
+function setLogPanelCollapsed(collapsed) {
+  logPanelEl.classList.toggle('collapsed', collapsed);
+  logToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+  logToggleBtn.setAttribute('aria-label', collapsed ? 'Expand panel' : 'Collapse panel');
+}
+
+logToggleBtn.addEventListener('click', () => setLogPanelCollapsed(!logPanelEl.classList.contains('collapsed')));
 
 // metrics tab
 
@@ -231,7 +247,7 @@ function showPanelTab(name) {
     tab.classList.toggle('active', active);
     tab.setAttribute('aria-selected', String(active));
   }
-  logPanelEl.classList.remove('collapsed');
+  setLogPanelCollapsed(false);
   logBodyEl.hidden = name !== 'logs';
   logControlsEl.hidden = name !== 'logs';
   metricsBodyEl.hidden = name !== 'metrics';
@@ -313,6 +329,7 @@ const canvasComments = new CanvasComments({
 
 validationBtn.addEventListener('click', (e) => {
   e.stopPropagation();
+  setFileMenuOpen(false);
   validationMenuEl.hidden = !validationMenuEl.hidden;
 });
 
@@ -330,6 +347,7 @@ btnAutoLayoutEl.addEventListener('click', () => {
 btnSnapEl.addEventListener('click', () => {
   renderer.snapEnabled = !renderer.snapEnabled;
   btnSnapEl.classList.toggle('active', renderer.snapEnabled);
+  btnSnapEl.setAttribute('aria-pressed', String(renderer.snapEnabled));
 });
 
 btnAddCommentEl.addEventListener('click', () => {
@@ -456,8 +474,15 @@ function pasteClipboard() {
 
 // toolbar
 
-document.getElementById('btn-new').addEventListener('click', () => {
-  if (!confirm('This will erase the current tree (not saved to a file). Continue?')) return;
+const confirmDialog = new ConfirmDialog(document.getElementById('confirm-dialog'));
+
+document.getElementById('btn-new').addEventListener('click', async () => {
+  const ok = await confirmDialog.ask({
+    title: 'Start a new tree?',
+    message: 'The current tree will be erased. Use "Save as JSON" first if you want to keep it.',
+    confirmLabel: 'Erase and start new',
+  });
+  if (!ok) return;
   swapTree(buildDefaultTree());
   renderer.resetView();
 });
@@ -512,25 +537,30 @@ function warnAboutOrphans() {
   }
 }
 
-exportMenuBtn.addEventListener('click', (e) => {
+function setFileMenuOpen(open) {
+  fileMenuEl.hidden = !open;
+  fileMenuBtn.setAttribute('aria-expanded', String(open));
+}
+
+fileMenuBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  exportMenuEl.hidden = !exportMenuEl.hidden;
+  validationMenuEl.hidden = true;
+  setFileMenuOpen(fileMenuEl.hidden);
 });
 document.addEventListener('click', () => {
-  exportMenuEl.hidden = true;
+  setFileMenuOpen(false);
   validationMenuEl.hidden = true;
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    exportMenuEl.hidden = true;
+    setFileMenuOpen(false);
     validationMenuEl.hidden = true;
   }
 });
 
-exportMenuEl.addEventListener('click', (e) => {
+fileMenuEl.addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-format]');
   if (!btn) return;
-  exportMenuEl.hidden = true;
   const format = btn.dataset.format;
 
   if (format === 'xml') {
@@ -592,6 +622,7 @@ function isTypingTarget() {
 }
 
 document.addEventListener('keydown', (e) => {
+  if (confirmDialog.dialogEl.open) return;
   const ctrlOrCmd = e.ctrlKey || e.metaKey;
   if ((e.key === 'Delete' || e.key === 'Backspace') && !isTypingTarget()) {
     if (renderer.selectedNodeId || renderer.selectedConnectionId) {

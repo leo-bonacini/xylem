@@ -76,12 +76,28 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
   padding: 6px 12px;
   cursor: pointer;
   transition: background 0.12s ease, border-color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .btn:hover:not(:disabled) { background: #333a48; border-color: var(--accent); }
 .btn:active:not(:disabled) { background: #2a303c; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.icon-btn { padding: 6px 10px; min-width: 32px; text-align: center; }
+.icon-btn { padding: 6px 8px; min-width: 32px; }
+
+.icon-sprite { display: none; }
+.icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .zoom-level { color: var(--text-2); font-size: 13px; min-width: 42px; text-align: center; }
 
@@ -93,14 +109,18 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
 .autosave-indicator.dirty { color: var(--warning); }
 .autosave-indicator.saved { color: var(--success); }
 
-.visitor-counter {
-  font-size: 12px;
+.search-field { position: relative; display: flex; align-items: center; }
+.search-field .icon {
+  position: absolute;
+  left: 9px;
+  width: 14px;
+  height: 14px;
   color: var(--text-2);
+  pointer-events: none;
 }
-
 .node-search-input {
   width: 220px;
-  padding: 6px 10px;
+  padding: 6px 10px 6px 30px;
   background: var(--bg-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -147,6 +167,23 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
   font-size: 13px;
 }
 .dropdown-menu button:hover { background: var(--bg-2); }
+.dropdown-menu kbd {
+  margin-left: auto;
+  padding-left: 16px;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+#file-menu button { display: flex; align-items: center; }
+.menu-sep { height: 1px; margin: 4px 2px; background: var(--border-light); }
+.menu-label {
+  padding: 4px 10px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
 
 .validation-badge {
   background: var(--danger);
@@ -161,12 +198,16 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
 .validation-empty { padding: 10px; color: var(--text-2); font-size: 13px; }
 .validation-row {
   width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   white-space: normal;
   line-height: 1.4;
 }
 .validation-row.validation-error { color: var(--danger); }
 .validation-row.validation-warning { color: var(--warning); }
 .validation-row:disabled { cursor: default; opacity: 0.85; }
+.validation-row .icon { margin-top: 2px; }
 
 /* Minimap */
 
@@ -632,6 +673,7 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
   border-bottom: 1px solid var(--border);
 }
 .log-toggle-btn {
+  display: flex;
   background: none;
   border: none;
   color: var(--text-1);
@@ -765,3 +807,19 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
 .metrics-visit-row:hover { background: var(--bg-2); }
 .metrics-visit-row.metrics-unvisited { color: var(--danger); }
 .bt-node.coverage-miss { box-shadow: 0 0 0 2px var(--danger), var(--shadow-node); }
+
+/* Dialog */
+
+.dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 20px;
+  background: var(--bg-2);
+  color: var(--text-0);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+.dialog::backdrop { background: rgba(10, 12, 16, 0.6); }
+.dialog-title { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+.dialog-message { margin: 0 0 20px; color: var(--text-1); font-size: 14px; line-height: 1.5; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }

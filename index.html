@@ -8,6 +8,28 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Icons from Lucide (https://lucide.dev), ISC License -->
+<svg class="icon-sprite" aria-hidden="true">
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-undo-2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
+  <symbol id="i-redo-2" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></symbol>
+  <symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-workflow" viewBox="0 0 24 24"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></symbol>
+  <symbol id="i-grid-3x3" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></symbol>
+  <symbol id="i-sticky-note" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
+  <symbol id="i-skip-forward" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19"/></symbol>
+  <symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></symbol>
+  <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></symbol>
+</svg>
 <div id="app">
 
   <header id="toolbar">
@@ -28,73 +50,75 @@
     </div>
 
     <div class="toolbar-group">
-      <button id="btn-new" class="btn" title="New Project (clears the current tree)">New</button>
-      <button id="btn-open" class="btn" title="Open Project (JSON)">Open</button>
-      <button id="btn-save" class="btn" title="Save to the browser (Ctrl+S)">Save</button>
-      <button id="btn-save-as" class="btn" title="Export project as a JSON file">Save As</button>
-      <input id="file-input" type="file" accept="application/json" hidden>
-      <button id="btn-import-xml" class="btn" title="Import a tree from a behavior tree XML file">Import XML</button>
-      <input id="xml-file-input" type="file" accept=".xml,text/xml,application/xml" hidden>
       <div class="dropdown">
-        <button id="btn-export-menu" class="btn" title="Export in other formats">Export ▾</button>
-        <div id="export-menu" class="dropdown-menu" hidden>
-          <button type="button" data-format="xml">XML</button>
-          <button type="button" data-format="yaml">YAML</button>
-          <button type="button" data-format="svg">SVG</button>
-          <button type="button" data-format="png">PNG</button>
+        <button id="btn-file-menu" class="btn" aria-haspopup="menu" aria-expanded="false">File <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+        <div id="file-menu" class="dropdown-menu" role="menu" hidden>
+          <button type="button" id="btn-new" role="menuitem">New</button>
+          <button type="button" id="btn-open" role="menuitem">Open… <kbd>Ctrl+O</kbd></button>
+          <button type="button" id="btn-save" role="menuitem">Save to browser <kbd>Ctrl+S</kbd></button>
+          <button type="button" id="btn-save-as" role="menuitem">Save as JSON…</button>
+          <div class="menu-sep" role="separator"></div>
+          <button type="button" id="btn-import-xml" role="menuitem">Import XML…</button>
+          <div class="menu-sep" role="separator"></div>
+          <div class="menu-label">Export</div>
+          <button type="button" data-format="xml" role="menuitem">XML</button>
+          <button type="button" data-format="yaml" role="menuitem">YAML</button>
+          <button type="button" data-format="svg" role="menuitem">SVG</button>
+          <button type="button" data-format="png" role="menuitem">PNG</button>
         </div>
       </div>
+      <input id="file-input" type="file" accept="application/json" hidden>
+      <input id="xml-file-input" type="file" accept=".xml,text/xml,application/xml" hidden>
     </div>
 
     <div class="toolbar-group">
-      <button id="btn-undo" class="btn icon-btn" title="Undo (Ctrl+Z)" disabled>↶</button>
-      <button id="btn-redo" class="btn icon-btn" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
+      <button id="btn-undo" class="btn icon-btn" title="Undo (Ctrl+Z)" aria-label="Undo" disabled><svg class="icon"><use href="#i-undo-2"/></svg></button>
+      <button id="btn-redo" class="btn icon-btn" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled><svg class="icon"><use href="#i-redo-2"/></svg></button>
     </div>
 
     <div class="toolbar-group">
       <div class="dropdown">
-        <button id="btn-validation" class="btn icon-btn" title="View validation issues">
-          ⚠ <span id="validation-badge" class="validation-badge" hidden>0</span>
+        <button id="btn-validation" class="btn icon-btn" title="View validation issues" aria-label="Validation issues">
+          <svg class="icon"><use href="#i-triangle-alert"/></svg><span id="validation-badge" class="validation-badge" hidden>0</span>
         </button>
         <div id="validation-menu" class="dropdown-menu validation-menu" hidden></div>
       </div>
     </div>
 
     <div class="toolbar-group">
-      <input id="node-search-input" type="text" class="node-search-input" placeholder="🔍 Search node (Enter)" title="Search for a node in the current tree (Ctrl+F)">
+      <label class="search-field">
+        <svg class="icon"><use href="#i-search"/></svg>
+        <input id="node-search-input" type="search" class="node-search-input" placeholder="Search node" title="Search for a node in the current tree (Ctrl+F, Enter for next match)" aria-label="Search node">
+      </label>
     </div>
 
     <div class="toolbar-group grow"></div>
 
     <div class="toolbar-group">
-      <button id="btn-auto-layout" class="btn" title="Automatically rearrange the tree into layers">Auto Layout</button>
-      <button id="btn-snap" class="btn icon-btn" title="Toggle snap to grid">▦</button>
-      <button id="btn-add-comment" class="btn icon-btn" title="Add a visual comment to the canvas">🗒</button>
+      <button id="btn-auto-layout" class="btn icon-btn" title="Auto layout: rearrange the tree into layers" aria-label="Auto layout"><svg class="icon"><use href="#i-workflow"/></svg></button>
+      <button id="btn-snap" class="btn icon-btn" title="Snap to grid" aria-label="Snap to grid" aria-pressed="false"><svg class="icon"><use href="#i-grid-3x3"/></svg></button>
+      <button id="btn-add-comment" class="btn icon-btn" title="Add a comment to the canvas" aria-label="Add comment"><svg class="icon"><use href="#i-sticky-note"/></svg></button>
     </div>
 
     <div class="toolbar-group">
-      <button id="btn-zoom-out" class="btn icon-btn" title="Zoom out">−</button>
+      <button id="btn-zoom-out" class="btn icon-btn" title="Zoom out" aria-label="Zoom out"><svg class="icon"><use href="#i-minus"/></svg></button>
       <span id="zoom-level" class="zoom-level">100%</span>
-      <button id="btn-zoom-in" class="btn icon-btn" title="Zoom in">+</button>
-      <button id="btn-zoom-reset" class="btn icon-btn" title="Center / reset zoom">⤢</button>
+      <button id="btn-zoom-in" class="btn icon-btn" title="Zoom in" aria-label="Zoom in"><svg class="icon"><use href="#i-plus"/></svg></button>
+      <button id="btn-zoom-reset" class="btn icon-btn" title="Center and reset zoom" aria-label="Reset zoom"><svg class="icon"><use href="#i-scan"/></svg></button>
     </div>
 
     <div class="toolbar-group">
       <span id="autosave-indicator" class="autosave-indicator">Saved</span>
     </div>
-
-    <div class="toolbar-group">
-      <span id="visitor-counter" class="visitor-counter" title="Total visits">— visits</span>
-    </div>
   </header>
 
   <div id="sim-toolbar">
     <div class="toolbar-group">
-      <button id="sim-play" class="btn icon-btn" title="Play (Space)">▶</button>
-      <button id="sim-pause" class="btn icon-btn" title="Pause (Space)" disabled>⏸</button>
-      <button id="sim-step" class="btn icon-btn" title="Step (runs a single tick)">⏭</button>
-      <button id="sim-stop" class="btn icon-btn" title="Stop">⏹</button>
-      <button id="sim-reset" class="btn icon-btn" title="Reset (clears states)">↺</button>
+      <button id="sim-play" class="btn icon-btn" title="Play (Space)" aria-label="Play"><svg class="icon"><use href="#i-play"/></svg></button>
+      <button id="sim-pause" class="btn icon-btn" title="Pause (Space)" aria-label="Pause" disabled><svg class="icon"><use href="#i-pause"/></svg></button>
+      <button id="sim-step" class="btn icon-btn" title="Step (runs a single tick)" aria-label="Step"><svg class="icon"><use href="#i-skip-forward"/></svg></button>
+      <button id="sim-stop" class="btn icon-btn" title="Stop" aria-label="Stop"><svg class="icon"><use href="#i-square"/></svg></button>
+      <button id="sim-reset" class="btn icon-btn" title="Reset (clears states)" aria-label="Reset"><svg class="icon"><use href="#i-rotate-ccw"/></svg></button>
     </div>
     <div class="toolbar-group">
       <label class="sim-speed-label" for="sim-speed">Speed</label>
@@ -107,7 +131,7 @@
       </select>
     </div>
     <div class="toolbar-group">
-      <button id="btn-debug-mode" class="btn icon-btn" title="Debug Mode: pauses execution when a breakpoint is hit">🐞</button>
+      <button id="btn-debug-mode" class="btn icon-btn" title="Debug mode: pause when a breakpoint is hit" aria-label="Debug mode" aria-pressed="false"><svg class="icon"><use href="#i-bug"/></svg></button>
     </div>
     <div class="toolbar-group grow"></div>
     <div class="toolbar-group">
@@ -151,7 +175,7 @@
 
   <div id="log-panel">
     <div class="log-panel-header">
-      <button id="log-toggle" class="log-toggle-btn" title="Collapse/expand logs">▾</button>
+      <button id="log-toggle" class="log-toggle-btn" title="Collapse or expand the panel" aria-label="Collapse panel" aria-expanded="true"><svg class="icon"><use href="#i-chevron-down"/></svg></button>
       <div class="panel-tabs" role="tablist">
         <button type="button" class="panel-tab active" role="tab" data-tab="logs" aria-selected="true">Execution Logs</button>
         <button type="button" class="panel-tab" role="tab" data-tab="metrics" aria-selected="false">Metrics</button>
@@ -177,6 +201,17 @@
 
 </div>
 
+<dialog id="confirm-dialog" class="dialog" aria-labelledby="confirm-title">
+  <form method="dialog">
+    <h2 id="confirm-title" class="dialog-title"></h2>
+    <p id="confirm-message" class="dialog-message"></p>
+    <div class="dialog-actions">
+      <button value="cancel" class="btn" autofocus>Cancel</button>
+      <button value="confirm" id="confirm-ok" class="btn btn-danger"></button>
+    </div>
+  </form>
+</dialog>
+
 <script src="js/nodeTypes.js"></script>
 <script src="js/Node.js"></script>
 <script src="js/Connection.js"></script>
@@ -196,15 +231,7 @@
 <script src="js/HistoryManager.js"></script>
 <script src="js/Minimap.js"></script>
 <script src="js/CanvasComments.js"></script>
+<script src="js/ConfirmDialog.js"></script>
 <script src="js/main.js"></script>
-<script>
-(function () {
-  var el = document.getElementById('visitor-counter');
-  fetch('https://abacus.jasoncameron.dev/hit/xylem-leobonacini/visits')
-    .then(function (res) { return res.json(); })
-    .then(function (data) { el.textContent = data.value + ' visits'; })
-    .catch(function () { el.textContent = 'n/a visits'; });
-})();
-</script>
 </body>
 </html>

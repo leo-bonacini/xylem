@@ -47,7 +47,7 @@ xdg-open index.html  # Linux
 start index.html     # Windows
 ```
 
-Everything runs client-side, with no server and no `npm install`. The only network request is the visit counter in the toolbar, which calls `abacus.jasoncameron.dev` once when the page loads. Offline, the counter shows "n/a visits" and the rest of the editor works normally.
+Everything runs client-side, with no server, no `npm install`, and no network requests. You can check this in the browser's Network tab.
 
 ## Project structure
 
@@ -66,6 +66,7 @@ js/
   PropertiesPanel.js  Right sidebar: per-node property form
   Minimap.js          Canvas overview with click/drag-to-navigate
   CanvasComments.js   Freestanding visual comments on the canvas
+  ConfirmDialog.js    In-app confirm dialog (replaces window.confirm)
   HistoryManager.js   Snapshot-based undo/redo
   Simulator.js        Tick-based execution engine (generator functions)
   Metrics.js          Tree and run metrics, Metrics tab
@@ -117,6 +118,7 @@ Shortcuts that could conflict with normal text editing are disabled while a text
 
 - **Import**: a standard behavior tree XML format. Recognizes the tags this editor itself exports as well as common real-world aliases (`ReactiveSequence`, `Selector`, `AlwaysSuccess`, …). Unrecognized tags are never silently dropped: they're imported as an Action or Sequence (depending on whether they have children), with the original tag name preserved in the node's comments and a warning shown to you.
 - **Export**: XML (round-trips through this editor with layout preserved via `_x`/`_y`/`_desc`/`_comments` attributes that a standard parser simply ignores), YAML, SVG (vector, so already high-resolution), and PNG (rasterized from that SVG at 2x scale).
+- All of these live in the **File** menu in the toolbar.
 - **Project files**: Save/Open use a JSON format (`.json`) that round-trips the tree exactly, including layout, comments, and breakpoints.
 
 ## Browser support
@@ -134,3 +136,5 @@ Found a bug? Open an issue using the [bug report template](.github/ISSUE_TEMPLAT
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+Toolbar icons are from [Lucide](https://lucide.dev), ISC License.
