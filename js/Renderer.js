@@ -34,7 +34,7 @@ class Renderer {
     this.gridSize = 20;
     this._drag = null;
 
-    this.viewportEl.addEventListener('mousedown', (e) => this._onViewportMouseDown(e));
+    this.viewportEl.addEventListener('pointerdown', (e) => this._onViewportPointerDown(e));
     this.viewportEl.addEventListener('wheel', (e) => this._onWheel(e), { passive: false });
     this.viewportEl.addEventListener('dragover', (e) => e.preventDefault());
     this.viewportEl.addEventListener('drop', (e) => this._onDrop(e));
@@ -55,10 +55,13 @@ class Renderer {
   // rendering
 
   renderAll() {
+    // Rebuilding the nodes drops keyboard focus; put it back on the same node.
+    const focusedId = this.nodesLayerEl.contains(document.activeElement) ? document.activeElement.dataset.id : null;
     this.nodesLayerEl.innerHTML = '';
     for (const node of this.tree.nodes.values()) {
       this.nodesLayerEl.appendChild(this._createNodeEl(node));
     }
+    if (focusedId) this.nodesLayerEl.querySelector(`.bt-node[data-id="${focusedId}"]`)?.focus({ preventScroll: true });
     this._updateConnections();
     this._applySelectionStyles();
     for (const [nodeId, state] of this.nodeStates) this._setStateClass(nodeId, state);
@@ -131,14 +134,14 @@ class Renderer {
     output.className = 'connector output' + (def.maxChildren === 0 ? ' no-output' : '');
     output.title = 'Output';
     if (def.maxChildren > 0) {
-      output.addEventListener('mousedown', (e) => this._onConnectorMouseDown(e, node.id));
+      output.addEventListener('pointerdown', (e) => this._onConnectorPointerDown(e, node.id));
     }
     el.appendChild(output);
 
     const bpDot = document.createElement('div');
     bpDot.className = 'bp-dot' + (node.breakpoint ? ' active' : '');
     bpDot.title = 'Toggle breakpoint (pauses the simulation here in Debug Mode)';
-    bpDot.addEventListener('mousedown', (e) => {
+    bpDot.addEventListener('pointerdown', (e) => {
       e.stopPropagation();
       node.breakpoint = !node.breakpoint;
       bpDot.classList.toggle('active', node.breakpoint);
@@ -146,7 +149,13 @@ class Renderer {
     });
     el.appendChild(bpDot);
 
-    el.addEventListener('mousedown', (e) => this._onNodeMouseDown(e, node.id));
+    el.addEventListener('pointerdown', (e) => this._onNodePointerDown(e, node.id));
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', `${node.title}, ${def.label} node`);
+    el.addEventListener('focus', () => {
+      if (this.selectedNodeId !== node.id) this.selectNode(node.id);
+    });
     return el;
   }
 
@@ -167,7 +176,7 @@ class Renderer {
       path.dataset.fromId = conn.fromId;
       path.dataset.toId = conn.toId;
       path.style.pointerEvents = 'stroke';
-      path.addEventListener('mousedown', (e) => {
+      path.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
         this.selectConnection(conn.id);
       });
@@ -248,8 +257,8 @@ class Renderer {
 
   // node drag
 
-  _onNodeMouseDown(e, nodeId) {
-    if (e.target.closest('.connector')) return;
+  _onNodePointerDown(e, nodeId) {
+    if (!e.isPrimary || e.target.closest('.connector')) return;
     e.stopPropagation();
     this.selectNode(nodeId);
     const node = this.tree.getNode(nodeId);
@@ -261,34 +270,37 @@ class Renderer {
       offsetY: world.y - node.y,
       moved: false,
     };
-    document.addEventListener('mousemove', this._onDocMouseMove);
-    document.addEventListener('mouseup', this._onDocMouseUp);
+    document.addEventListener('pointermove', this._onDocPointerMove);
+    document.addEventListener('pointerup', this._onDocPointerUp);
+    document.addEventListener('pointercancel', this._onDocPointerUp);
   }
 
   // connector drag
 
-  _onConnectorMouseDown(e, nodeId) {
+  _onConnectorPointerDown(e, nodeId) {
     e.stopPropagation();
     const from = this._connectorPos(nodeId, 'output');
     this._drag = { mode: 'connect', fromNodeId: nodeId, from };
-    document.addEventListener('mousemove', this._onDocMouseMove);
-    document.addEventListener('mouseup', this._onDocMouseUp);
+    document.addEventListener('pointermove', this._onDocPointerMove);
+    document.addEventListener('pointerup', this._onDocPointerUp);
+    document.addEventListener('pointercancel', this._onDocPointerUp);
   }
 
   // panning
 
-  _onViewportMouseDown(e) {
-    if (e.button !== 0) return;
+  _onViewportPointerDown(e) {
+    if (!e.isPrimary || e.button !== 0) return;
     this.selectNode(null);
     this._drag = { mode: 'pan', startClientX: e.clientX, startClientY: e.clientY, startPan: { ...this.pan } };
     this.viewportEl.classList.add('panning');
-    document.addEventListener('mousemove', this._onDocMouseMove);
-    document.addEventListener('mouseup', this._onDocMouseUp);
+    document.addEventListener('pointermove', this._onDocPointerMove);
+    document.addEventListener('pointerup', this._onDocPointerUp);
+    document.addEventListener('pointercancel', this._onDocPointerUp);
   }
 
   // shared doc handlers
 
-  _onDocMouseMove = (e) => {
+  _onDocPointerMove = (e) => {
     if (!this._drag) return;
     if (this._drag.mode === 'node') {
       if (!this._drag.moved) this.onBeforeMutate?.();
@@ -316,12 +328,14 @@ class Renderer {
     }
   };
 
-  _onDocMouseUp = (e) => {
+  _onDocPointerUp = (e) => {
     if (!this._drag) return;
     if (this._drag.mode === 'node' && this._drag.moved) {
       this.onTreeChange?.();
     } else if (this._drag.mode === 'connect') {
-      const targetConnector = e.target.closest?.('.connector.input');
+      // With touch, e.target stays on the element where the drag started,
+      // so look up what is actually under the pointer.
+      const targetConnector = document.elementFromPoint(e.clientX, e.clientY)?.closest('.connector.input');
       if (targetConnector) {
         const targetNodeEl = targetConnector.closest('.bt-node');
         const toId = targetNodeEl?.dataset.id;
@@ -338,8 +352,9 @@ class Renderer {
       this.viewportEl.classList.remove('panning');
     }
     this._drag = null;
-    document.removeEventListener('mousemove', this._onDocMouseMove);
-    document.removeEventListener('mouseup', this._onDocMouseUp);
+    document.removeEventListener('pointermove', this._onDocPointerMove);
+    document.removeEventListener('pointerup', this._onDocPointerUp);
+    document.removeEventListener('pointercancel', this._onDocPointerUp);
   };
 
   // drop from palette

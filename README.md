@@ -111,8 +111,14 @@ Scripts are loaded as classic `<script>` tags, in dependency order, rather than 
 | `Ctrl/Cmd + F` | Focus the node search field |
 | `Delete` / `Backspace` | Delete the selected node or connection |
 | `Space` | Play / Pause the simulator |
+| `Tab` | Move focus through the toolbar, palette and canvas nodes (focusing a node selects it) |
+| Arrow keys | Move the selected node one grid step (`Shift` for five) |
+| `B` | Toggle a breakpoint on the selected node |
+| `↓` on File / validation button | Open the menu; arrows move between items, `Esc` closes |
 
-Shortcuts that could conflict with normal text editing are disabled while a text field or textarea has focus.
+`Space`, the arrow keys and `B` only act on the canvas when focus is on the canvas or the page, not on a button, menu or field. Shortcuts that could conflict with normal text editing are disabled while a text field or textarea has focus.
+
+Dragging on the canvas (pan, move nodes, connect, minimap) works with mouse, pen or touch. Dragging from the palette uses native drag and drop, which mobile browsers don't support; tap a palette item to add it at the center of the view instead.
 
 ## Import & export
 

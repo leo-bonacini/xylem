@@ -138,7 +138,7 @@
       <span id="sim-stats" class="sim-stats" title="Successes / Failures / Average time / Max time / FPS"></span>
     </div>
     <div class="toolbar-group">
-      <span id="sim-status" class="sim-status sim-status-idle">Idle</span>
+      <span id="sim-status" class="sim-status sim-status-idle" role="status">Idle</span>
     </div>
   </div>
 
@@ -146,7 +146,7 @@
 
     <aside id="palette">
       <div class="palette-search">
-        <input id="palette-search-input" type="text" placeholder="Search node...">
+        <input id="palette-search-input" type="search" placeholder="Search node types..." aria-label="Search node types">
       </div>
       <div id="palette-list" class="palette-list"></div>
     </aside>
@@ -159,7 +159,7 @@
           <div id="nodes-layer"></div>
         </div>
       </div>
-      <div id="toast-container"></div>
+      <div id="toast-container" role="status" aria-live="polite"></div>
       <div id="canvas-hint">Drag a node from the palette on the left to get started.</div>
       <div id="minimap-wrap" title="Click or drag to navigate">
         <canvas id="minimap" width="180" height="120"></canvas>
@@ -181,14 +181,14 @@
         <button type="button" class="panel-tab" role="tab" data-tab="metrics" aria-selected="false">Metrics</button>
       </div>
       <div id="log-controls" class="log-controls">
-        <select id="log-filter">
+        <select id="log-filter" aria-label="Filter logs by state">
           <option value="all">All states</option>
           <option value="running">Running</option>
           <option value="success">Success</option>
           <option value="failure">Failure</option>
           <option value="skipped">Skipped</option>
         </select>
-        <input id="log-search" type="text" placeholder="Search by node...">
+        <input id="log-search" type="search" placeholder="Search by node..." aria-label="Search logs by node">
         <div class="toolbar-group grow"></div>
         <button id="log-clear" class="btn" title="Clear logs">Clear</button>
         <button id="log-export-txt" class="btn" title="Export as TXT">Export TXT</button>

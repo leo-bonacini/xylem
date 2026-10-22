@@ -44,21 +44,23 @@ class Palette {
     this.render();
   }
 
-  _toggleFavorite(typeId) {
+  _toggleFavorite(typeId, focusKey) {
     if (this.favorites.has(typeId)) this.favorites.delete(typeId);
     else this.favorites.add(typeId);
     writeStoredSet(FAVORITES_KEY, this.favorites);
-    this.render();
+    this.render(focusKey);
   }
 
   _toggleCollapsed(category) {
     if (this.collapsed.has(category)) this.collapsed.delete(category);
     else this.collapsed.add(category);
     writeStoredSet(COLLAPSED_KEY, this.collapsed);
-    this.render();
+    this.render(`header:${category}`);
   }
 
-  render() {
+  /** Rebuilds the list. `focusKey` puts keyboard focus back on the control
+   * that triggered the re-render, since the old element is gone. */
+  render(focusKey) {
     this.listEl.innerHTML = '';
 
     const byCategory = {};
@@ -76,42 +78,62 @@ class Palette {
       const types = byCategory[cat];
       if (types && types.length) this._renderCategory(cat, CATEGORY_LABELS[cat], types);
     }
+
+    if (focusKey) this.listEl.querySelector(`[data-focus-key="${focusKey}"]`)?.focus();
   }
 
   _renderCategory(key, label, types) {
     const wrap = document.createElement('div');
     wrap.className = 'palette-category' + (this.collapsed.has(key) ? ' collapsed' : '');
 
-    const header = document.createElement('div');
+    const header = document.createElement('button');
+    header.type = 'button';
     header.className = 'palette-category-header';
-    header.innerHTML = `<span class="chevron">▾</span><span>${label}</span>`;
+    header.dataset.focusKey = `header:${key}`;
+    header.setAttribute('aria-expanded', String(!this.collapsed.has(key)));
+    header.innerHTML = `<span class="chevron" aria-hidden="true">▾</span><span>${label}</span>`;
     header.addEventListener('click', () => this._toggleCollapsed(key));
     wrap.appendChild(header);
 
     const items = document.createElement('div');
     items.className = 'palette-items';
-    for (const type of types) items.appendChild(this._createItem(type));
+    for (const type of types) items.appendChild(this._createItem(type, key));
     wrap.appendChild(items);
 
     this.listEl.appendChild(wrap);
   }
 
-  _createItem(type) {
+  /** The item is a draggable wrapper holding two controls: the label (adds
+   * the node on click or Enter/Space) and the favorite toggle. They are
+   * siblings so no interactive element is nested inside another. */
+  _createItem(type, categoryKey) {
     const item = document.createElement('div');
     item.className = 'palette-item';
     item.style.setProperty('--item-color', type.color);
     item.draggable = true;
     item.title = type.description;
 
+    const isFavorite = this.favorites.has(type.id);
+    const favKey = `fav:${categoryKey}:${type.id}`;
     item.innerHTML = `
-      <span class="p-icon">${type.icon}</span>
-      <span class="p-label">${type.label}</span>
-      <span class="p-fav${this.favorites.has(type.id) ? ' active' : ''}">★</span>
+      <span class="p-main" role="button" tabindex="0" aria-label="Add ${type.label} node">
+        <span class="p-icon" aria-hidden="true">${type.icon}</span>
+        <span class="p-label">${type.label}</span>
+      </span>
+      <button type="button" class="p-fav${isFavorite ? ' active' : ''}" data-focus-key="${favKey}"
+        aria-pressed="${isFavorite}" aria-label="Favorite ${type.label}">★</button>
     `;
 
     item.querySelector('.p-fav').addEventListener('click', (e) => {
       e.stopPropagation();
-      this._toggleFavorite(type.id);
+      this._toggleFavorite(type.id, favKey);
+    });
+
+    item.querySelector('.p-main').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.onAddNode?.(type.id);
+      }
     });
 
     item.addEventListener('dragstart', (e) => {
