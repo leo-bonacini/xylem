@@ -152,21 +152,27 @@
   <div id="log-panel">
     <div class="log-panel-header">
       <button id="log-toggle" class="log-toggle-btn" title="Collapse/expand logs">▾</button>
-      <span class="log-title">Execution Logs</span>
-      <select id="log-filter">
-        <option value="all">All states</option>
-        <option value="running">Running</option>
-        <option value="success">Success</option>
-        <option value="failure">Failure</option>
-        <option value="skipped">Skipped</option>
-      </select>
-      <input id="log-search" type="text" placeholder="Search by node...">
-      <div class="toolbar-group grow"></div>
-      <button id="log-clear" class="btn" title="Clear logs">Clear</button>
-      <button id="log-export-txt" class="btn" title="Export as TXT">Export TXT</button>
-      <button id="log-export-csv" class="btn" title="Export as CSV">Export CSV</button>
+      <div class="panel-tabs" role="tablist">
+        <button type="button" class="panel-tab active" role="tab" data-tab="logs" aria-selected="true">Execution Logs</button>
+        <button type="button" class="panel-tab" role="tab" data-tab="metrics" aria-selected="false">Metrics</button>
+      </div>
+      <div id="log-controls" class="log-controls">
+        <select id="log-filter">
+          <option value="all">All states</option>
+          <option value="running">Running</option>
+          <option value="success">Success</option>
+          <option value="failure">Failure</option>
+          <option value="skipped">Skipped</option>
+        </select>
+        <input id="log-search" type="text" placeholder="Search by node...">
+        <div class="toolbar-group grow"></div>
+        <button id="log-clear" class="btn" title="Clear logs">Clear</button>
+        <button id="log-export-txt" class="btn" title="Export as TXT">Export TXT</button>
+        <button id="log-export-csv" class="btn" title="Export as CSV">Export CSV</button>
+      </div>
     </div>
     <div id="log-body" class="log-body"></div>
+    <div id="metrics-body" class="metrics-body" hidden></div>
   </div>
 
 </div>
@@ -181,6 +187,7 @@
 <script src="js/PropertiesPanel.js"></script>
 <script src="js/Logger.js"></script>
 <script src="js/Simulator.js"></script>
+<script src="js/Metrics.js"></script>
 <script src="js/Layout.js"></script>
 <script src="js/XmlExporter.js"></script>
 <script src="js/XmlImporter.js"></script>

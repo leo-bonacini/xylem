@@ -39,7 +39,7 @@ class Simulator {
   }
 
   _emptyStats() {
-    return { successes: 0, failures: 0, durations: [], lastTickAt: null, fps: 0 };
+    return { successes: 0, failures: 0, durations: [], lastTickAt: null, fps: 0, ticks: 0, visits: new Map() };
   }
 
   /** Stats ready for display: counts + average/max duration of completed
@@ -49,6 +49,12 @@ class Simulator {
     const avgDuration = durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
     const maxDuration = durations.length ? Math.max(...durations) : 0;
     return { successes, failures, avgDuration, maxDuration, fps };
+  }
+
+  /** Per-run execution counters for the Metrics tab: ticks sent to the Root
+   * and how many times each node was started (nodeId -> count). */
+  getExecutionMetrics() {
+    return { ticks: this.stats.ticks, visits: this.stats.visits };
   }
 
   setSpeed(mult) {
@@ -143,6 +149,7 @@ class Simulator {
       if (dt > 0) this.stats.fps = Math.round(1000 / dt);
     }
     this.stats.lastTickAt = now;
+    this.stats.ticks++;
 
     this._breakpointHit = null;
     let iter;
@@ -227,6 +234,7 @@ class Simulator {
   *_tickNode(nodeId) {
     const node = this.tree.getNode(nodeId);
     if (!node) return 'FAILURE';
+    this.stats.visits.set(nodeId, (this.stats.visits.get(nodeId) || 0) + 1);
 
     if (node.type === 'condition') {
       const result = this._evalCondition(node);
