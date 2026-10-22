@@ -542,6 +542,35 @@ function setFileMenuOpen(open) {
   fileMenuBtn.setAttribute('aria-expanded', String(open));
 }
 
+/** Arrow keys move between the items of an open menu, Esc closes it and
+ * returns focus to the button that opened it. */
+function addMenuKeyboard(menuEl, buttonEl, close) {
+  const items = () => [...menuEl.querySelectorAll('button:not(:disabled)')];
+  buttonEl.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' && menuEl.hidden) {
+      e.preventDefault();
+      buttonEl.click();
+      items()[0]?.focus();
+    }
+  });
+  menuEl.addEventListener('keydown', (e) => {
+    const list = items();
+    const i = list.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const next = e.key === 'ArrowDown' ? i + 1 : i - 1;
+      list[(next + list.length) % list.length]?.focus();
+    } else if (e.key === 'Escape') {
+      e.stopPropagation();
+      close();
+      buttonEl.focus();
+    }
+  });
+}
+
+addMenuKeyboard(fileMenuEl, fileMenuBtn, () => setFileMenuOpen(false));
+addMenuKeyboard(validationMenuEl, validationBtn, () => { validationMenuEl.hidden = true; });
+
 fileMenuBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   validationMenuEl.hidden = true;
@@ -616,6 +645,16 @@ document.getElementById('btn-zoom-reset').addEventListener('click', () => render
 
 // shortcuts
 
+const ARROW_KEYS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+
+/** True when focus is on the page itself or on a canvas node, so keys like
+ * Space and the arrows can act on the canvas without stealing them from a
+ * focused button, menu, or select. */
+function canvasHasFocus() {
+  const el = document.activeElement;
+  return !el || el === document.body || nodesLayerEl.contains(el);
+}
+
 function isTypingTarget() {
   const el = document.activeElement;
   return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
@@ -624,6 +663,8 @@ function isTypingTarget() {
 document.addEventListener('keydown', (e) => {
   if (confirmDialog.dialogEl.open) return;
   const ctrlOrCmd = e.ctrlKey || e.metaKey;
+  const selectedNode = renderer.selectedNodeId ? tree.getNode(renderer.selectedNodeId) : null;
+  const arrow = ARROW_KEYS[e.key];
   if ((e.key === 'Delete' || e.key === 'Backspace') && !isTypingTarget()) {
     if (renderer.selectedNodeId || renderer.selectedConnectionId) {
       e.preventDefault();
@@ -654,7 +695,22 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     nodeSearchInputEl.focus();
     nodeSearchInputEl.select();
-  } else if (e.code === 'Space' && !isTypingTarget()) {
+  } else if (arrow && selectedNode && !ctrlOrCmd && canvasHasFocus()) {
+    // Keyboard alternative to dragging: move the selected node one grid
+    // step (five with Shift).
+    e.preventDefault();
+    const step = renderer.gridSize * (e.shiftKey ? 5 : 1);
+    historyManager.push();
+    selectedNode.x += arrow[0] * step;
+    selectedNode.y += arrow[1] * step;
+    renderer.renderAll();
+    markDirty();
+  } else if (e.key.toLowerCase() === 'b' && selectedNode && !ctrlOrCmd && canvasHasFocus()) {
+    selectedNode.breakpoint = !selectedNode.breakpoint;
+    renderer.renderAll();
+    markDirty();
+    showToast(`Breakpoint ${selectedNode.breakpoint ? 'set on' : 'removed from'} "${selectedNode.title}".`);
+  } else if (e.code === 'Space' && canvasHasFocus()) {
     e.preventDefault();
     if (simulator.simState === 'running') simulator.pause();
     else simulator.play();

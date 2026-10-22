@@ -37,6 +37,23 @@ html, body {
 
 button, input, select, textarea { font-family: inherit; font-size: 14px; }
 
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dropdown-menu button:focus-visible,
+.validation-row:focus-visible,
+.metrics-visit-row:focus-visible,
+.palette-category-header:focus-visible { outline-offset: -2px; }
+
+/* The canvas handles its own panning and dragging, including on touch. */
+#viewport, #minimap { touch-action: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 #app {
   height: 100vh;
   display: flex;
@@ -259,6 +276,11 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
 
 .palette-category { margin-bottom: 4px; }
 .palette-category-header {
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  text-align: left;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -292,8 +314,9 @@ button, input, select, textarea { font-family: inherit; font-size: 14px; }
   width: 20px; text-align: center; font-size: 14px;
   color: var(--item-color, var(--text-0));
 }
+.palette-item .p-main { flex: 1; display: flex; align-items: center; gap: 8px; border-radius: var(--radius-sm); }
 .palette-item .p-label { flex: 1; font-size: 13px; }
-.palette-item .p-fav { color: var(--text-2); cursor: pointer; font-size: 13px; }
+.palette-item .p-fav { color: var(--text-2); cursor: pointer; font-size: 13px; background: none; border: none; padding: 0 2px; border-radius: var(--radius-sm); }
 .palette-item .p-fav.active { color: var(--warning); }
 
 /* Canvas */

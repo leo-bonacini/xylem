@@ -23,16 +23,18 @@ class Minimap {
     this._oy = 0;
     this._dragging = false;
 
-    canvasEl.addEventListener('mousedown', (e) => {
+    canvasEl.addEventListener('pointerdown', (e) => {
       this._dragging = true;
       this._jumpTo(e);
     });
-    document.addEventListener('mousemove', (e) => {
+    document.addEventListener('pointermove', (e) => {
       if (this._dragging) this._jumpTo(e);
     });
-    document.addEventListener('mouseup', () => {
+    const stopDragging = () => {
       this._dragging = false;
-    });
+    };
+    document.addEventListener('pointerup', stopDragging);
+    document.addEventListener('pointercancel', stopDragging);
   }
 
   render() {

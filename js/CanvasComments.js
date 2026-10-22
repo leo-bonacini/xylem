@@ -48,7 +48,7 @@ class CanvasComments {
     del.type = 'button';
     del.textContent = '×';
     del.title = 'Remove comment';
-    del.addEventListener('mousedown', (e) => e.stopPropagation());
+    del.addEventListener('pointerdown', (e) => e.stopPropagation());
     del.addEventListener('click', () => {
       this.onBeforeMutate?.();
       this.tree.removeComment(comment.id);
@@ -61,7 +61,7 @@ class CanvasComments {
     textarea.className = 'comment-text';
     textarea.value = comment.text;
     textarea.placeholder = 'Comment...';
-    textarea.addEventListener('mousedown', (e) => e.stopPropagation());
+    textarea.addEventListener('pointerdown', (e) => e.stopPropagation());
     textarea.addEventListener('focus', () => this.onBeforeMutate?.());
     textarea.addEventListener('input', () => {
       comment.text = textarea.value;
@@ -69,19 +69,20 @@ class CanvasComments {
     });
     el.appendChild(textarea);
 
-    el.addEventListener('mousedown', (e) => this._onMouseDown(e, comment));
+    el.addEventListener('pointerdown', (e) => this._onPointerDown(e, comment));
     return el;
   }
 
-  _onMouseDown(e, comment) {
+  _onPointerDown(e, comment) {
     e.stopPropagation();
     const world = this.renderer.screenToWorld(e.clientX, e.clientY);
     this._drag = { comment, offsetX: world.x - comment.x, offsetY: world.y - comment.y, moved: false };
-    document.addEventListener('mousemove', this._onMouseMove);
-    document.addEventListener('mouseup', this._onMouseUp);
+    document.addEventListener('pointermove', this._onPointerMove);
+    document.addEventListener('pointerup', this._onPointerUp);
+    document.addEventListener('pointercancel', this._onPointerUp);
   }
 
-  _onMouseMove = (e) => {
+  _onPointerMove = (e) => {
     if (!this._drag) return;
     if (!this._drag.moved) this.onBeforeMutate?.();
     const world = this.renderer.screenToWorld(e.clientX, e.clientY);
@@ -95,10 +96,11 @@ class CanvasComments {
     }
   };
 
-  _onMouseUp = () => {
+  _onPointerUp = () => {
     if (this._drag?.moved) this.onChange?.();
     this._drag = null;
-    document.removeEventListener('mousemove', this._onMouseMove);
-    document.removeEventListener('mouseup', this._onMouseUp);
+    document.removeEventListener('pointermove', this._onPointerMove);
+    document.removeEventListener('pointerup', this._onPointerUp);
+    document.removeEventListener('pointercancel', this._onPointerUp);
   };
 }

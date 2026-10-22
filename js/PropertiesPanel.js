@@ -1,4 +1,6 @@
 
+let fieldIdCounter = 0;
+
 class PropertiesPanel {
   /**
    * @param {object} opts
@@ -54,6 +56,8 @@ class PropertiesPanel {
     wrap.className = 'field' + (readonly ? ' readonly' : '');
     const label = document.createElement('label');
     label.textContent = labelText;
+    if (!inputEl.id) inputEl.id = `field-${++fieldIdCounter}`;
+    label.htmlFor = inputEl.id;
     wrap.appendChild(label);
     wrap.appendChild(inputEl);
     if (hint) {
