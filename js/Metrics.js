@@ -1,12 +1,9 @@
-// Tree metrics, following the structural measures common in the behavior
-// tree literature (size, depth, branching factor, node type distribution)
-// plus execution measures taken from the simulator (ticks, node executions,
-// coverage). Only nodes reachable from the Root count: disconnected nodes
-// never run, so they are reported separately instead of skewing the numbers.
+// Metrics for the Metrics tab: the shape of the tree, and what the
+// simulator did in the current run. Only nodes under the Root are counted;
+// disconnected nodes are shown as a separate number.
 
-/** Static metrics, computed from the tree alone (no simulation needed).
- * Size excludes the Root itself, which is a fixed entry point. Returns null
- * when there is no Root. */
+/** Size, depth, branching and node types of the tree under the Root (the
+ * Root itself is not counted). Returns null if there is no Root. */
 function computeStructuralMetrics(tree) {
   const root = tree.getRoots()[0];
   if (!root) return null;
@@ -73,8 +70,8 @@ class MetricsPanel {
     if (visible) this.render();
   }
 
-  /** Cheap enough to call on every tick, but skipped while the tab is hidden
-   * (the coverage highlight on the canvas is still kept in sync). */
+  /** Called on every tree change and tick. While the tab is hidden only the
+   * canvas highlight is updated. */
   render() {
     const tree = this.getTree();
     const structure = computeStructuralMetrics(tree);
@@ -98,12 +95,12 @@ class MetricsPanel {
     const section = this._section('Structure');
     const grid = this._el('div', 'metrics-grid');
     grid.append(
-      this._stat('Size', s.size, 'Nodes reachable from the Root (Root excluded)'),
-      this._stat('Depth', s.depth, 'Longest path from the Root, in edges'),
+      this._stat('Size', s.size, 'Nodes under the Root, not counting the Root'),
+      this._stat('Depth', s.depth, 'Levels below the Root'),
       this._stat('Leaves', s.leaves, 'Nodes without children'),
-      this._stat('Avg branching', s.avgBranching.toFixed(2), 'Mean number of children of non-leaf nodes'),
-      this._stat('Max branching', s.maxBranching, 'Largest number of children of a single node'),
-      this._stat('Disconnected', s.disconnected, 'Nodes not reachable from the Root (never executed)'),
+      this._stat('Avg branching', s.avgBranching.toFixed(2), 'Average children per non-leaf node'),
+      this._stat('Max branching', s.maxBranching, 'Most children on a single node'),
+      this._stat('Disconnected', s.disconnected, 'Nodes not connected to the Root'),
     );
     section.appendChild(grid);
 
@@ -136,10 +133,10 @@ class MetricsPanel {
 
     const grid = this._el('div', 'metrics-grid');
     grid.append(
-      this._stat('Ticks', e.ticks, 'Ticks sent to the Root in this run'),
-      this._stat('Node executions', executions, 'Times any node was started (a node running over several ticks counts once)'),
-      this._stat('Coverage', `${coverage}%`, `${covered} of ${s.size} reachable nodes executed at least once`),
-      this._stat('Not executed', unexecuted.length, 'Reachable nodes that have not run yet'),
+      this._stat('Ticks', e.ticks, 'Ticks in this run'),
+      this._stat('Node executions', executions, 'Times a node was started in this run'),
+      this._stat('Coverage', `${coverage}%`, `${covered} of ${s.size} nodes ran at least once`),
+      this._stat('Not executed', unexecuted.length, 'Nodes that have not run yet'),
     );
     section.appendChild(grid);
 
@@ -151,7 +148,7 @@ class MetricsPanel {
       this.highlightUnexecuted = checkbox.checked;
       this.render();
     });
-    toggle.append(checkbox, document.createTextNode(' Highlight non-executed nodes on the canvas'));
+    toggle.append(checkbox, document.createTextNode(' Highlight nodes that did not run'));
     section.appendChild(toggle);
 
     const table = this._el('div', 'metrics-visits');

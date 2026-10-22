@@ -21,7 +21,7 @@ Most behavior tree editors need an install, a build step, or a running backend. 
 - **Tick-based simulator**: Play, Pause, Step, Stop, and Reset a real execution, at 0.25x to 5x speed, with live node/connection animations and a scrollable execution log (filterable, searchable, exportable as TXT/CSV).
 - **Debug mode & breakpoints**: click the corner of any node to set a breakpoint; with Debug Mode on, Play pauses the instant that node starts running.
 - **Execution statistics**: live success/failure counts, average and max tick duration, and simulator FPS.
-- **Metrics tab**: structural metrics of the tree (size, depth, leaves, average/max branching factor, node type distribution, disconnected nodes) and execution metrics of the current run (ticks, node executions, per-node visit counts, coverage), with an option to highlight nodes that never ran. The measures follow the behavior tree evaluation literature (e.g. Gugliermo et al., *Evaluating behavior trees*, RAS 2024).
+- **Metrics tab**: tree size, depth, leaf count, branching factor, node types and disconnected nodes, plus ticks, node executions, visit counts and coverage for the current run. Nodes that never ran can be highlighted on the canvas.
 - **Import / Export**: round-trip a standard behavior tree XML format (including tolerant import of hand-written trees with unknown/custom tags), plus export to YAML, SVG, and PNG.
 - **Undo/Redo, Copy/Cut/Paste**: full history (100 steps) and subtree clipboard operations.
 - **Auto Layout & Snap to Grid**: one click to re-flow the tree into layers; optional grid snapping while dragging.
@@ -47,7 +47,7 @@ xdg-open index.html  # Linux
 start index.html     # Windows
 ```
 
-Everything runs client-side. There is no server and no `npm install`. The editor itself makes no network requests; the only one is the visit counter in the toolbar, which sends a single request to `abacus.jasoncameron.dev` on page load. Offline (or if that request is blocked) the counter shows "n/a visits" and everything else works the same. You can verify this yourself in the browser's Network tab.
+Everything runs client-side, with no server and no `npm install`. The only network request is the visit counter in the toolbar, which calls `abacus.jasoncameron.dev` once when the page loads. Offline, the counter shows "n/a visits" and the rest of the editor works normally.
 
 ## Project structure
 
@@ -68,7 +68,7 @@ js/
   CanvasComments.js   Freestanding visual comments on the canvas
   HistoryManager.js   Snapshot-based undo/redo
   Simulator.js        Tick-based execution engine (generator functions)
-  Metrics.js          Structural + execution metrics and the Metrics tab
+  Metrics.js          Tree and run metrics, Metrics tab
   Logger.js           Execution log panel: filter, search, export
   Storage.js          localStorage autosave + file download helpers
   XmlExporter.js      Tree to behavior tree XML
