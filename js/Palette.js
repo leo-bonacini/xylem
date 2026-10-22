@@ -69,7 +69,7 @@ class Palette {
 
     if (this.favorites.size > 0 && !this.query) {
       const favTypes = [...this.favorites].map((id) => NODE_TYPES[id]).filter(Boolean);
-      if (favTypes.length) this._renderCategory('favorites', '⭐ Favorites', favTypes);
+      if (favTypes.length) this._renderCategory('favorites', 'Favorites', favTypes);
     }
 
     for (const cat of CATEGORY_ORDER) {
